@@ -21,7 +21,11 @@ const PORT = 4000;
 // middleware
 app.use(
   cors({
-    origin: "https://fooder-pi.vercel.app/",
+    origin: [
+      "https://fooder-pi.vercel.app",
+      "https://fooder-git-master-arrzgeraldys-projects.vercel.app",
+      "https://fooder-arrzgeraldys-projects.vercel.app",
+    ],
     credentials: true,
   })
 );
