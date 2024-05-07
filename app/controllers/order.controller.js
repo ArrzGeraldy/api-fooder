@@ -84,7 +84,11 @@ const getOrderById = async (req, res) => {
 
     const foundUser = await findUserByEmail(user.email);
 
-    if (order.user.userId !== String(foundUser._id)) return res.sendStatus(403);
+    if (String(order.user.userId) !== String(foundUser._id)) {
+      if (foundUser.role !== "admin") {
+        return res.sendStatus(403);
+      }
+    }
 
     const orderItems = await OrderItems.find({ orderId: order._id }).populate(
       "product"
