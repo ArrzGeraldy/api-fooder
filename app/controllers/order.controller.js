@@ -21,7 +21,7 @@ const createOrder = async (req, res) => {
     const user = req.user;
     const foundUser = await findUserByEmail(user.email);
     if (!foundUser) return res.sendStatus(403);
-
+    console.log({ foundUser });
     let totalAmount = 0;
 
     items.forEach((item) => {
@@ -31,7 +31,11 @@ const createOrder = async (req, res) => {
     let order = new Order({
       _id: new Types.ObjectId(),
       total: totalAmount,
-      user: foundUser._id,
+      user: {
+        userId: String(foundUser._id),
+        email: foundUser.email,
+        username: foundUser.username,
+      },
       delivery_address: {
         name: address.name,
         phone: address.phone,
@@ -74,22 +78,16 @@ const getOrderById = async (req, res) => {
     const { id } = req.params;
 
     const user = req.user;
-    const order = await Order.findOne({ _id: id }).populate(
-      "user",
-      "username email role"
-    );
+    const order = await Order.findOne({ _id: id });
 
     if (!order) return responseError(res, 404, "Order not found");
 
     const foundUser = await findUserByEmail(user.email);
 
-    if (!foundUser || String(order.user._id) !== String(foundUser._id)) {
-      return res.sendStatus(403);
-    }
+    if (order.user.userId !== String(foundUser._id)) return res.sendStatus(403);
 
     const orderItems = await OrderItems.find({ orderId: order._id }).populate(
-      "product",
-      "-createdAt -updatedAt -__v -category -tags"
+      "product"
     );
 
     return res.send({ data: { order, orderItems } });
@@ -98,7 +96,8 @@ const getOrderById = async (req, res) => {
     return responseError(res, 500, "Internal server error");
   }
 };
-const getOrders = async (req, res) => {
+
+const getUserOrders = async (req, res) => {
   try {
     const user = req.user;
     const foundUser = await findUserByEmail(user.email);
@@ -106,11 +105,50 @@ const getOrders = async (req, res) => {
     if (!foundUser) {
       return res.sendStatus(403);
     }
-    const order = await Order.find({ user: foundUser._id });
+    const order = await Order.find({ "user.userId": foundUser._id });
 
     if (!order) return responseError(res, 404, "Order not found");
 
     return res.send({ data: order });
+  } catch (error) {
+    console.log(error);
+    return responseError(res, 500, "Internal server error");
+  }
+};
+
+const getAllOrders = async (req, res) => {
+  try {
+    const { q = "", status = "", sort = -1 } = req.query;
+    let criteria = {};
+
+    if (q) {
+      criteria = { ...criteria, _id: q };
+    }
+
+    if (status.length > 2) {
+      criteria = { ...criteria, status };
+    }
+
+    const orders = await Order.find(criteria).sort({
+      createdAt: parseInt(sort),
+    });
+    return res.send({ data: orders });
+  } catch (error) {
+    console.log(error);
+    return responseError(res, 500, "Internal server error");
+  }
+};
+
+const updateOrder = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const { id } = req.params;
+    const orders = await Order.findOneAndUpdate(
+      { _id: id },
+      { status: status },
+      { new: true }
+    );
+    return res.send({ message: "update order success", data: orders });
   } catch (error) {
     console.log(error);
     return responseError(res, 500, "Internal server error");
@@ -133,4 +171,11 @@ const paymentSuccess = async (req, res) => {
   }
 };
 
-module.exports = { createOrder, getOrderById, paymentSuccess, getOrders };
+module.exports = {
+  createOrder,
+  getOrderById,
+  paymentSuccess,
+  getUserOrders,
+  getAllOrders,
+  updateOrder,
+};

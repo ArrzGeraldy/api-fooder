@@ -12,6 +12,7 @@ const productRoute = require("./routes/product.router");
 const cartRoute = require("./routes/cart.router");
 const addressRoute = require("./routes/address.router");
 const orderRoute = require("./routes/order.router");
+const userRoute = require("./routes/user.router");
 const { EventEmitter } = require("stream");
 EventEmitter.setMaxListeners(15); // Atur batas maksimum listener menjadi 15
 
@@ -22,6 +23,7 @@ const PORT = 4000;
 app.use(
   cors({
     origin: [
+      "http://localhost:5173",
       "https://fooder-pi.vercel.app",
       "https://fooder-git-master-arrzgeraldys-projects.vercel.app",
       "https://fooder-arrzgeraldys-projects.vercel.app",
@@ -37,6 +39,7 @@ app.use(verifyToken);
 
 // routes api v1
 app.use("/auth", authRoute);
+app.use("/api/v1", userRoute);
 app.use("/api/v1", categoryRoute);
 app.use("/api/v1", tagRoute);
 app.use("/api/v1", productRoute);

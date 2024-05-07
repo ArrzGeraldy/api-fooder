@@ -152,7 +152,12 @@ const logoutController = async (req, res) => {
       return res.sendStatus(204);
     }
 
-    await User.findOneAndUpdate({ _id: foundUser._id, refreshToken: "" });
+    console.log({ foundUser });
+
+    await User.findOneAndUpdate(
+      { _id: foundUser._id },
+      { $unset: { refreshToken: "" } }
+    );
 
     res.clearCookie("token", {
       httpOnly: true,
