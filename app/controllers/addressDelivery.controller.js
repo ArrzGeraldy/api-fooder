@@ -65,7 +65,12 @@ const getAddressUser = async (req, res) => {
 const editAddress = async (req, res) => {
   try {
     const { id } = req.params;
-    const newData = req.body;
+
+    const { error, value } = createAddressValidation(req.body);
+    if (error) {
+      logger.error(`Error: ${error.details[0].message}`);
+      return responseError(res, 400, `${error.details[0].message}`, false);
+    }
 
     const user = req.user;
 
@@ -75,7 +80,13 @@ const editAddress = async (req, res) => {
 
     const updateAddress = await AddressDelivery.findOneAndUpdate(
       { _id: id },
-      { newData },
+      {
+        name: value.name,
+        phone: value.phone,
+        province: value.province,
+        city: value.city,
+        detail: value.detail,
+      },
       { new: true }
     );
 

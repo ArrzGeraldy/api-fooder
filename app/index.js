@@ -13,8 +13,8 @@ const cartRoute = require("./routes/cart.router");
 const addressRoute = require("./routes/address.router");
 const orderRoute = require("./routes/order.router");
 const userRoute = require("./routes/user.router");
-const { EventEmitter } = require("stream");
-EventEmitter.setMaxListeners(15); // Atur batas maksimum listener menjadi 15
+// const { EventEmitter } = require("stream");
+// EventEmitter.setMaxListeners(15); // Atur batas maksimum listener menjadi 15
 
 const app = express();
 const PORT = 4000;
