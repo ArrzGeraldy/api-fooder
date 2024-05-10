@@ -146,7 +146,7 @@ const logoutController = async (req, res) => {
     const foundUser = await User.findOne({ refreshToken: token });
 
     if (!foundUser) {
-      res.clearCookies("token", {
+      res.clearCookie("token", {
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
@@ -158,8 +158,9 @@ const logoutController = async (req, res) => {
       { $unset: { refreshToken: "" } }
     );
 
-    res.clearCookie("token", { path: "/" });
-    res.send({ message: "succes logout" });
+    res.clearCookie("token");
+
+    return res.send({ message: "succes logout" });
   } catch (error) {
     console.log(error);
     logger.error("Error: logout controller");
