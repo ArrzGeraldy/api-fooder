@@ -161,6 +161,7 @@ const logoutController = async (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
     });
     res.send({ message: "succes logout" });
   } catch (error) {
