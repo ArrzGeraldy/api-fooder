@@ -87,6 +87,7 @@ const loginController = async (req, res) => {
     res.cookie("token", refreshToken, {
       httpOnly: true,
       secure: true,
+      sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -151,8 +152,6 @@ const logoutController = async (req, res) => {
       });
       return res.sendStatus(204);
     }
-
-    console.log({ foundUser });
 
     await User.findOneAndUpdate(
       { _id: foundUser._id },
