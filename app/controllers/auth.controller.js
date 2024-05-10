@@ -158,11 +158,7 @@ const logoutController = async (req, res) => {
       { $unset: { refreshToken: "" } }
     );
 
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: true,
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    res.clearCookie("token");
     res.send({ message: "succes logout" });
   } catch (error) {
     console.log(error);
