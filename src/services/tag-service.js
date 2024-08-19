@@ -1,17 +1,49 @@
-const { ResponseError } = require("../error/response-error.js");
+const ResponseError = require("../error/response-error.js");
 const Tag = require("../models/tag.model");
-const { validate } = require("../validations/validate.js");
-const findTagByName = async (name) => {
-  return await Tag.findOne({ name });
-};
+const Category = require("../models/category.model");
+const { tagValidation } = require("../validations/tag.validation.js");
+const validate = require("../validations/validate.js");
 
+const getAll = async (category) => {
+  let filter = {};
+
+  if (category.length) {
+    const foundCategory = await Category.findOne({
+      name: { $regex: category, $options: "i" },
+    }).select("_id name");
+
+    if (foundCategory) {
+      filter = { ...filter, category: foundCategory._id };
+    } else {
+      throw new ResponseError(404, "category not found");
+    }
+  }
+
+  return Tag.find(filter).populate("category", "_id name");
+};
 const create = async (request) => {
-  const tagRequest = validate(request);
-  const count = await Tag.findOne({ name: tagRequest.name });
+  const tagRequest = validate(tagValidation, request);
+  const count = await Tag.countDocuments({ name: tagRequest.name });
 
   if (count == 1) throw new ResponseError(400, "name already exits");
 
   return Tag.create(tagRequest);
+};
+
+const update = async (id, request) => {
+  const count = await Tag.countDocuments({ _id: id });
+  console.log({ count });
+
+  if (count < 1) throw new ResponseError(404, "tag not found");
+
+  const tagRequest = validate(tagValidation, request);
+  return Tag.findByIdAndUpdate(id, tagRequest, { new: true });
+};
+
+const destroy = async (id) => {
+  const tag = await Tag.findByIdAndDelete(id);
+
+  if (!tag) throw new ResponseError(404, "tag not found");
 };
 
 const findTagById = async (id) => {
@@ -27,9 +59,11 @@ const findTagsByName = async (payload) => {
 };
 
 module.exports = {
-  findTagByName,
   updateTag,
   findTagsByName,
   findTagById,
   create,
+  update,
+  destroy,
+  getAll,
 };
