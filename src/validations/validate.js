@@ -1,4 +1,4 @@
-const { ResponseError } = require("../error/response-error");
+const ResponseError = require("../error/response-error");
 
 const validate = (schema, request) => {
   const result = schema.validate(request);
@@ -9,6 +9,4 @@ const validate = (schema, request) => {
   }
 };
 
-module.exports = {
-  validate,
-};
+module.exports = validate;

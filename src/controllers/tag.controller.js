@@ -11,20 +11,11 @@ const {
   updateTagValidation,
 } = require("../validations/tag.validation");
 const { findCategoryByName } = require("../services/category-service");
+const tagService = require("../services/tag-service.js");
 
-const createTag = async (req, res) => {
+const createTag = async (req, res, next) => {
   try {
-    const { error, value } = createTagValidation(req.body);
-
-    if (error) {
-      logger.error(`Error: ${error.details[0].message}`);
-      return responseError(res, 400, `${error.details[0].message}`, false);
-    }
-
-    const existingTag = await findTagByName(value.name);
-    if (existingTag) return responseError(res, 400, "Tag name already exists");
-
-    const tag = await Tag.create(value);
+    const tag = await tagService.create(req.body);
 
     logger.info("Create tag successfully");
 
@@ -33,7 +24,7 @@ const createTag = async (req, res) => {
     console.log(error);
     logger.error("Error: create tag controller");
 
-    return responseError(res, 500, "Internal server error");
+    next(e);
   }
 };
 

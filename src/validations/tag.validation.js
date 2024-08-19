@@ -1,14 +1,9 @@
 const Joi = require("joi");
 
-// create validation
-const createTagValidation = (payload) => {
-  const schema = Joi.object({
-    name: Joi.string().min(3).max(100).required(),
-    category: Joi.string().required(),
-  });
-
-  return schema.validate(payload);
-};
+const createTagValidation = Joi.object({
+  name: Joi.string().min(3).max(100).required(),
+  category: Joi.string().required(),
+});
 
 const updateTagValidation = (payload) => {
   const schema = Joi.object({

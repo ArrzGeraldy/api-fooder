@@ -58,7 +58,7 @@ const refreshController = async (req, res, next) => {
   }
 };
 
-const logoutController = async (req, res) => {
+const logoutController = async (req, res, next) => {
   try {
     const cookies = req.cookies;
 
@@ -79,7 +79,7 @@ const logoutController = async (req, res) => {
   } catch (error) {
     console.log(error);
     logger.error("Error: logout controller");
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 };
 

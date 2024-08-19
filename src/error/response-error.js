@@ -5,6 +5,4 @@ class ResponseError extends Error {
   }
 }
 
-module.exports = {
-  ResponseError,
-};
+module.exports = ResponseError;

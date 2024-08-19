@@ -1,9 +1,9 @@
-const { ResponseError } = require("../error/response-error");
+const ResponseError = require("../error/response-error");
 const {
   registerValidation,
   loginValidation,
 } = require("../validations/auth.validation");
-const { validate } = require("../validations/validate.js");
+const validate = require("../validations/validate.js");
 const User = require("../models/user.model");
 const Cart = require("../models/cart.model.js");
 const AddressDelivery = require("../models/addressDelivery.model.js");
