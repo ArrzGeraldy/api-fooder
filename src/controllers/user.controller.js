@@ -1,6 +1,6 @@
 const userService = require("../services/userService");
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
     return res.send({ data: users });
@@ -10,7 +10,7 @@ const getUsers = async (req, res) => {
   }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     const deletedUser = await userService.destroy(id);
