@@ -1,3 +1,4 @@
+const ResponseError = require("../error/response-error");
 const User = require("../models/user.model");
 
 const checkUser = async (user) => {
