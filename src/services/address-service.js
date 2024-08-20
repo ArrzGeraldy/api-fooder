@@ -1,21 +1,13 @@
 const ResponseError = require("../error/response-error");
 const AddressDelivery = require("../models/addressDelivery.model");
-const User = require("../models/user.model");
 const { addressValidation } = require("../validations/address.validation");
 const validate = require("../validations/validate");
-
-const checkUser = async (user) => {
-  const foundUser = await User.findOne({ email: user.email });
-
-  if (!foundUser) throw new ResponseError(404, "User Not Found.");
-
-  return foundUser;
-};
+const userHelper = require("../utils/user-helper.js");
 
 const create = async (request, user) => {
   const addressRequest = validate(addressValidation, request);
 
-  const foundUser = await checkUser(user);
+  const foundUser = await userHelper.checkUser(user);
 
   const { city, phone, name, detail, province } = addressRequest;
 
@@ -30,13 +22,13 @@ const create = async (request, user) => {
 };
 
 const findAddress = async (user) => {
-  const foundUser = await checkUser(user);
+  const foundUser = await userHelper.checkUser(user);
 
   return AddressDelivery.find({ user: foundUser._id });
 };
 
 const update = async (id, user, request) => {
-  await checkUser(user);
+  await userHelper.checkUser(user);
   const updateRequest = validate(addressValidation, request);
 
   const updateAddress = await AddressDelivery.findOneAndUpdate(
@@ -57,7 +49,7 @@ const update = async (id, user, request) => {
 };
 
 const destroy = async (id, user) => {
-  await checkUser(user);
+  await userHelper.checkUser(user);
 
   const result = await AddressDelivery.findByIdAndDelete({ _id: id });
 

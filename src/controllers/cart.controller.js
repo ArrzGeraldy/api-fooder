@@ -3,25 +3,6 @@ const { findUserByEmail } = require("../services/userService");
 const { responseError } = require("../utils/response");
 const logger = require("../utils/logger");
 
-const data = [
-  {
-    name: "Product 1",
-    quantity: 12,
-  },
-  {
-    name: "Me Product",
-    quantity: 14,
-  },
-  {
-    name: "Product Cart",
-    quantity: 77,
-  },
-];
-
-const test = async (req, res) => {
-  res.send({ data: data });
-};
-
 const Cart = require("../models/cart.model");
 const { findProduct } = require("../services/product-service");
 const { storeCartItemValidation } = require("../validations/cart.validation");
@@ -149,7 +130,6 @@ const deletCartItem = async (req, res) => {
 };
 
 module.exports = {
-  test,
   storeItem,
   getCartItems,
   editItemInCart,
