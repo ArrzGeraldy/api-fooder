@@ -23,9 +23,24 @@ const countCategory = async (name) => {
 
   return count === 1;
 };
+const countProduct = async (name) => {
+  const count = await Product.countDocuments({
+    name,
+  });
+
+  return count === 1;
+};
+
+const findCategoryByName = async (name) => {
+  return Category.findOne({
+    name: { $regex: name, $options: "i" },
+  }).select("_id name");
+};
 
 module.exports = {
   findProduct,
   duplicateCartItem,
   countCategory,
+  countProduct,
+  findCategoryByName,
 };

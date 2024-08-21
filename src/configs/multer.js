@@ -14,6 +14,7 @@ const storage = multer.diskStorage({
 const fileFilter = function (req, file, cb) {
   const allowedMimeTypes = [
     "image/jpeg",
+    "image/jpg",
     "image/png",
     "image/gif",
     "image/webp",
@@ -24,7 +25,7 @@ const fileFilter = function (req, file, cb) {
   } else {
     cb(
       new multer.MulterError(
-        "MIME TYPES",
+        "LIMIT_UNEXPECTED_FILE",
         "Only images (.jpg, .jpeg, .png, .webp) are allowed!"
       )
     );

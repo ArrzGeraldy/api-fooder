@@ -30,7 +30,6 @@ router.post(
 );
 
 router.get("/products", getProducts);
-router.get("/products/:slug", getProduct);
 router.post("/products", upload.single("image"), createProduct);
 router.put("/products/:id", editProduct);
 router.delete("/products/:id", deleteProduct);

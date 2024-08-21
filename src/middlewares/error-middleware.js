@@ -1,4 +1,5 @@
 const ResponseError = require("../error/response-error");
+const multer = require("multer");
 
 const errorMiddleware = async (err, req, res, next) => {
   if (!err) {
@@ -9,6 +10,17 @@ const errorMiddleware = async (err, req, res, next) => {
   if (err instanceof ResponseError) {
     res
       .status(err.status)
+      .json({
+        status: false,
+        error: {
+          message: err.message,
+        },
+      })
+      .end();
+  } else if (err instanceof multer.MulterError) {
+    console.log(err);
+    res
+      .status(400)
       .json({
         status: false,
         error: {
