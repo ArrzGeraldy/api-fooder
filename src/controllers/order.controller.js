@@ -6,6 +6,7 @@ const midtransClient = require("midtrans-client");
 const orderItems = require("../models/order.items.model");
 const { responseError } = require("../utils/response");
 const OrderItems = require("../models/order.items.model");
+const orderService = require("../services/order-service.js");
 
 // Create Snap API instance
 let snap = new midtransClient.Snap({
@@ -73,89 +74,51 @@ const createOrder = async (req, res) => {
   }
 };
 
-const getOrderById = async (req, res) => {
+const getOrderById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const user = req.user;
-    const order = await Order.findOne({ _id: id });
-
-    if (!order) return responseError(res, 404, "Order not found");
-
-    const foundUser = await findUserByEmail(user.email);
-
-    if (String(order.user.userId) !== String(foundUser._id)) {
-      if (foundUser.role !== "admin") {
-        return res.sendStatus(403);
-      }
-    }
-
-    const orderItems = await OrderItems.find({ orderId: order._id }).populate(
-      "product"
-    );
+    const { order, orderItems } = await orderService.findOne(id, req.user);
 
     return res.send({ data: { order, orderItems } });
   } catch (error) {
     console.log(error);
-    return responseError(res, 500, "Internal server error");
+    next(error);
   }
 };
 
-const getUserOrders = async (req, res) => {
+const getUserOrders = async (req, res, next) => {
   try {
     const user = req.user;
-    const foundUser = await findUserByEmail(user.email);
 
-    if (!foundUser) {
-      return res.sendStatus(403);
-    }
-    const order = await Order.find({ "user.userId": foundUser._id });
-
-    if (!order) return responseError(res, 404, "Order not found");
+    const order = await orderService.findByuser(user);
 
     return res.send({ data: order });
   } catch (error) {
     console.log(error);
-    return responseError(res, 500, "Internal server error");
+    next(error);
   }
 };
 
-const getAllOrders = async (req, res) => {
+const getAllOrders = async (req, res, next) => {
   try {
-    const { q = "", status = "", sort = -1 } = req.query;
-    let criteria = {};
-
-    if (q) {
-      criteria = { ...criteria, _id: q };
-    }
-
-    if (status.length > 2) {
-      criteria = { ...criteria, status };
-    }
-
-    const orders = await Order.find(criteria).sort({
-      createdAt: parseInt(sort),
-    });
+    const orders = await orderService.findAll(req.query);
     return res.send({ data: orders });
   } catch (error) {
     console.log(error);
-    return responseError(res, 500, "Internal server error");
+    next(error);
   }
 };
 
-const updateOrder = async (req, res) => {
+const updateOrder = async (req, res, next) => {
   try {
     const { status } = req.body;
     const { id } = req.params;
-    const orders = await Order.findOneAndUpdate(
-      { _id: id },
-      { status: status },
-      { new: true }
-    );
+    const orders = await orderService.update(id, status);
     return res.send({ message: "update order success", data: orders });
   } catch (error) {
     console.log(error);
-    return responseError(res, 500, "Internal server error");
+    next(error);
   }
 };
 
